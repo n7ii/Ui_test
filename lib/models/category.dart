@@ -25,4 +25,16 @@ class Category {
       'category_id': categoryId,
     };
   }
+
+  // Add these methods for proper object comparison
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Category &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          categoryId == other.categoryId;
+
+  @override
+  int get hashCode => id.hashCode ^ categoryId.hashCode;
 }

@@ -25,4 +25,16 @@ class Unit {
       'unit_id': unitId,
     };
   }
+
+  // Add these methods for proper object comparison
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Unit &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          unitId == other.unitId;
+
+  @override
+  int get hashCode => id.hashCode ^ unitId.hashCode;
 }

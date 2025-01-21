@@ -47,8 +47,8 @@ class Product {
       'quantity': quantity,
       'price': price,
       'sale_price': salePrice,
-      'category_id': category.categoryId,
-      'unit_id': unit.unitId,
+      'category': category.categoryId,
+      'unit': unit.unitId,
     };
   }
 }

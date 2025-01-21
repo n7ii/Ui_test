@@ -60,6 +60,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   void _deleteProduct(String productId) async {
+    //print('Delete product with id: $productId');
     try {
       await ApiService().deleteProduct(productId);
       _refreshProducts();
@@ -218,7 +219,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             ),
                             IconButton(
                               icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _deleteProduct(product.id),
+                              onPressed: () => _deleteProduct(product.productId.toString()),
                             ),
                           ],
                         ),
