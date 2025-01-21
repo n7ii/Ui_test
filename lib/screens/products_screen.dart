@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
+import '../models/category.dart'; // Add this
+import '../models/unit.dart'; // Add this
 import 'add_edit_product_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -26,18 +28,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   // Navigate to the add/edit product screen
   void _navigateToAddEditProduct({Product? product}) async {
-  final result = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => AddEditProductScreen(product: product),
-    ),
-  );
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddEditProductScreen(product: product),
+      ),
+    );
 
-  // Refresh the product list after adding/editing
-  if (result == true) {
-    _refreshProducts();
+    // Refresh the product list after adding/editing
+    if (result == true) {
+      _refreshProducts();
+    }
   }
-}
+
   // Delete a product
   void _deleteProduct(String productId) async {
     try {
@@ -61,7 +64,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.add), // This is the "+" icon (Add button)
-            onPressed: () => _navigateToAddEditProduct(), 
+            onPressed: () => _navigateToAddEditProduct(),
           ),
         ],
       ),
@@ -101,7 +104,24 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       children: [
                         SizedBox(height: 4),
                         Text(
-                          'Category: ${product.categoryName}',
+                          'Category: ${product.category.categoryName}',
+                          style: TextStyle(
+                            color: Colors.grey
+                                .shade600, // Changed from MColors to Colors
+                            fontSize: 14,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Unit: ${product.unit.unitName}',
+                          style: TextStyle(
+                            color: Colors.grey
+                                .shade600, // Changed from MColors to Colors
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          'Category: ${product.category?.categoryName ?? 'N/A'}',
                           style: TextStyle(
                             color: Colors.grey.shade600,
                             fontSize: 14,
@@ -109,7 +129,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          'Unit: ${product.unitName}',
+                          'Unit: ${product.unit?.unitName ?? 'N/A'}',
                           style: TextStyle(
                             color: Colors.grey.shade600,
                             fontSize: 14,
@@ -148,7 +168,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       children: [
                         IconButton(
                           icon: Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () => _navigateToAddEditProduct(product: product),
+                          onPressed: () =>
+                              _navigateToAddEditProduct(product: product),
                         ),
                         IconButton(
                           icon: Icon(Icons.delete, color: Colors.red),
@@ -165,7 +186,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
       ),
       // Add a FloatingActionButton for adding products
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToAddEditProduct(), // Navigates to the add/edit screen
+        onPressed: () =>
+            _navigateToAddEditProduct(), // Navigates to the add/edit screen
         child: Icon(Icons.add), // This is the "+" icon (Add button)
         backgroundColor: Colors.blue,
       ),
