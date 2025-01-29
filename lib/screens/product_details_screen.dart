@@ -10,7 +10,10 @@ class ProductDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product Details'),
+        title: Text('ລາຍລະອຽດສິນຄ້າ', style: TextStyle(color: Colors.black87)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black87),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -18,83 +21,54 @@ class ProductDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Product Image Placeholder
               Center(
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.blue.shade100,
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    shape: BoxShape.circle,
+                  ),
                   child: Icon(
                     Icons.shopping_bag,
                     size: 50,
-                    color: Colors.blue,
+                    color: Colors.blue.shade700,
                   ),
                 ),
               ),
               SizedBox(height: 24),
 
+              // Product Name
               Text(
                 product.productName,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
               SizedBox(height: 16),
 
-              Card(
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailRow('Category', product.category.categoryName),
-                      Divider(),
-                      _buildDetailRow('Unit', product.unit.unitName),
-                      Divider(),
-                      _buildDetailRow('Quantity', product.quantity.toString()),
-                      Divider(),
-                      _buildDetailRow('Price', '\$' + product.price.toString()),
-                      Divider(),
-                      _buildDetailRow('Sale Price', '\$' + product.salePrice.toString()),
-                    ],
-                  ),
-                ),
+              // Product Details
+              _buildDetailSection(
+                context,
+                title: 'ຂໍ້ມູນສິນຄ້າ',
+                details: [
+                  _buildDetailItem('Category', product.category.categoryName),
+                  _buildDetailItem('Unit', product.unit.unitName),
+                  _buildDetailItem('Quantity', product.quantity.toString()),
+                ],
               ),
               SizedBox(height: 16),
 
-              Card(
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Price Information',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildPriceInfo(
-                            'Regular Price',
-                            '\$' + product.price.toString(),
-                            Colors.green.shade700,
-                          ),
-                          _buildPriceInfo(
-                            'Sale Price',
-                            '\$' + product.salePrice.toString(),
-                            Colors.red.shade700,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+              // Price Information
+              _buildDetailSection(
+                context,
+                title: 'ລາຄາ',
+                details: [
+                  _buildDetailItem('Price', '\$' + product.price.toString(), color: Colors.green.shade700),
+                ],
               ),
             ],
           ),
@@ -103,7 +77,38 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  // Helper method to build a detail section
+  Widget _buildDetailSection(BuildContext context, {required String title, required List<Widget> details}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(height: 12),
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: details,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Helper method to build a detail item
+  Widget _buildDetailItem(String label, String value, {Color? color}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -121,33 +126,11 @@ class ProductDetailsScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: color ?? Colors.black87,
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildPriceInfo(String label, String price, Color color) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey.shade600,
-          ),
-        ),
-        SizedBox(height: 4),
-        Text(
-          price,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ],
     );
   }
 }

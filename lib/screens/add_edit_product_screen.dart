@@ -20,16 +20,13 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
   late TextEditingController _priceController;
   late TextEditingController _salePriceController;
 
-  final ApiService _apiService = ApiService(); // Add this line
-  bool _isLoading = false; // Add this line
+  final ApiService _apiService = ApiService();
+  bool _isLoading = false;
 
-  // Add these variables
   List<Category> _categories = [];
   List<Unit> _units = [];
   Category? _selectedCategory;
   Unit? _selectedUnit;
-
-   
 
   @override
   void initState() {
@@ -43,43 +40,40 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
     _loadCategoriesAndUnits();
   }
 
-  // Add this method
   Future<void> _loadCategoriesAndUnits() async {
-  try {
-    final categories = await _apiService.fetchCategories();
-    final units = await _apiService.fetchUnits();
-    
-    setState(() {
-      _categories = categories;
-      _units = units;
+    try {
+      final categories = await _apiService.fetchCategories();
+      final units = await _apiService.fetchUnits();
 
-      if (widget.product != null) {
-        // For editing: find matching category and unit from the fetched lists
-        _selectedCategory = _categories.firstWhere(
-          (category) => category.categoryId == widget.product!.category.categoryId,
-          orElse: () => _categories.first,
+      setState(() {
+        _categories = categories;
+        _units = units;
+
+        if (widget.product != null) {
+          _selectedCategory = _categories.firstWhere(
+            (category) => category.categoryId == widget.product!.category.categoryId,
+            orElse: () => _categories.first,
+          );
+          _selectedUnit = _units.firstWhere(
+            (unit) => unit.unitId == widget.product!.unit.unitId,
+            orElse: () => _units.first,
+          );
+        } else {
+          _selectedCategory = categories.isNotEmpty ? categories.first : null;
+          _selectedUnit = units.isNotEmpty ? units.first : null;
+        }
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading data: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
-        _selectedUnit = _units.firstWhere(
-          (unit) => unit.unitId == widget.product!.unit.unitId,
-          orElse: () => _units.first,
-        );
-      } else {
-        // For new product: select first items as default
-        _selectedCategory = categories.isNotEmpty ? categories.first : null;
-        _selectedUnit = units.isNotEmpty ? units.first : null;
       }
-    });
-  } catch (e) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error loading data: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
-}
 
   Future<void> _saveProduct() async {
     if (_formKey.currentState!.validate()) {
@@ -108,8 +102,6 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
           unit: _selectedUnit!,
           productId: widget.product?.productId ?? 0,
         );
-
-        print('Product to add: ${updatedProduct.toJson()}');
 
         if (widget.product == null) {
           await _apiService.addProduct(updatedProduct);
@@ -142,6 +134,9 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.product == null ? 'Add Product' : 'Edit Product'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black87),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -150,6 +145,7 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                // Product Name
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(
@@ -164,7 +160,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                   },
                 ),
                 SizedBox(height: 16),
-                // Add Category Dropdown
+
+                // Category Dropdown
                 DropdownButtonFormField<Category>(
                   value: _selectedCategory,
                   decoration: InputDecoration(
@@ -184,7 +181,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                   },
                 ),
                 SizedBox(height: 16),
-                // Add Unit Dropdown
+
+                // Unit Dropdown
                 DropdownButtonFormField<Unit>(
                   value: _selectedUnit,
                   decoration: InputDecoration(
@@ -204,7 +202,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                   },
                 ),
                 SizedBox(height: 16),
-                // ... Your existing TextFormFields ...
+
+                // Quantity
                 TextFormField(
                   controller: _quantityController,
                   decoration: InputDecoration(
@@ -223,6 +222,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                   },
                 ),
                 SizedBox(height: 16),
+
+                // Price
                 TextFormField(
                   controller: _priceController,
                   decoration: InputDecoration(
@@ -241,6 +242,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                   },
                 ),
                 SizedBox(height: 16),
+
+                // Sale Price
                 TextFormField(
                   controller: _salePriceController,
                   decoration: InputDecoration(
@@ -259,6 +262,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                   },
                 ),
                 SizedBox(height: 24),
+
+                // Save Button
                 ElevatedButton(
                   onPressed: _isLoading ? null : _saveProduct,
                   child: _isLoading
@@ -266,6 +271,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                       : Text(widget.product == null ? 'Add Product' : 'Update Product'),
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 48),
+                    backgroundColor: Colors.blue.shade700,
+                    foregroundColor: Colors.white,
                   ),
                 ),
               ],
