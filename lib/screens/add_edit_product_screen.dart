@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frist_pp/models/category.dart';
+import 'package:frist_pp/screens/add_category_screen.dart';
+import 'package:frist_pp/screens/add_unit_screen.dart';
+import 'package:frist_pp/screens/unit_management_screen.dart';
 import 'package:frist_pp/services/api_service.dart';
 import '../models/product.dart';
 import '../models/unit.dart';
+import 'package:frist_pp/screens/category_management_screen.dart';
 
 class AddEditProductScreen extends StatefulWidget {
   final Product? product;
@@ -31,10 +35,14 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.product?.productName ?? '');
-    _quantityController = TextEditingController(text: widget.product?.quantity.toString() ?? '');
-    _priceController = TextEditingController(text: widget.product?.price.toString() ?? '');
-    _salePriceController = TextEditingController(text: widget.product?.salePrice.toString() ?? '');
+    _nameController =
+        TextEditingController(text: widget.product?.productName ?? '');
+    _quantityController =
+        TextEditingController(text: widget.product?.quantity.toString() ?? '');
+    _priceController =
+        TextEditingController(text: widget.product?.price.toString() ?? '');
+    _salePriceController =
+        TextEditingController(text: widget.product?.salePrice.toString() ?? '');
     _selectedCategory = widget.product?.category;
     _selectedUnit = widget.product?.unit;
     _loadCategoriesAndUnits();
@@ -51,7 +59,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
 
         if (widget.product != null) {
           _selectedCategory = _categories.firstWhere(
-            (category) => category.categoryId == widget.product!.category.categoryId,
+            (category) =>
+                category.categoryId == widget.product!.category.categoryId,
             orElse: () => _categories.first,
           );
           _selectedUnit = _units.firstWhere(
@@ -129,6 +138,34 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
     }
   }
 
+  Future<void> _navigateToCreateCategory() async {
+    final newCategory = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CreateCategoryScreen()),
+    );
+
+    if (newCategory != null) {
+      setState(() {
+        _categories.add(newCategory);
+        _selectedCategory = newCategory;
+      });
+    }
+  }
+
+  Future<void> _navigateToCreateUnit() async {
+    final newUnit = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CreateUnitScreen()),
+    );
+
+    if (newUnit != null) {
+      setState(() {
+        _units.add(newUnit);
+        _selectedUnit = newUnit;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,45 +198,155 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                 ),
                 SizedBox(height: 16),
 
-                // Category Dropdown
-                DropdownButtonFormField<Category>(
-                  value: _selectedCategory,
-                  decoration: InputDecoration(
-                    labelText: 'Category',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: _categories.map((Category category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(category.categoryName),
-                    );
-                  }).toList(),
-                  onChanged: (Category? newValue) {
-                    setState(() {
-                      _selectedCategory = newValue;
-                    });
-                  },
+                // // Category Dropdown
+                // DropdownButtonFormField<Category>(
+                //   value: _selectedCategory,
+                //   decoration: InputDecoration(
+                //     labelText: 'Category',
+                //     border: OutlineInputBorder(),
+                //   ),
+                //   items: _categories.map((Category category) {
+                //     return DropdownMenuItem(
+                //       value: category,
+                //       child: Text(category.categoryName),
+                //     );
+                //   }).toList(),
+                //   onChanged: (Category? newValue) {
+                //     setState(() {
+                //       _selectedCategory = newValue;
+                //     });
+                //   },
+                // ),
+
+                // Card(
+                //   elevation: 2,
+                //   child: ListTile(
+                //     leading: Icon(Icons.add, color: Colors.blue.shade700),
+                //     title: Text(
+                //       'Create New Category',
+                //       style: TextStyle(color: Colors.blue.shade700),
+                //     ),
+                //     onTap: _navigateToCreateCategory,
+                //   ),
+                // ),
+                // SizedBox(height: 16),
+
+                Row(
+                  children: [
+                    // Category Dropdown
+                    Expanded(
+                      child: DropdownButtonFormField<Category>(
+                        value: _selectedCategory,
+                        decoration: InputDecoration(
+                          labelText: 'Category',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: _categories.map((Category category) {
+                          return DropdownMenuItem(
+                            value: category,
+                            child: Text(category.categoryName),
+                          );
+                        }).toList(),
+                        onChanged: (Category? newValue) {
+                          setState(() {
+                            _selectedCategory = newValue;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                        width:
+                            8), // Add some spacing between the dropdown and the button
+                    // Add Category Button
+                    IconButton(
+                      onPressed: _navigateToCreateCategory,
+                      icon: Icon(Icons.add, color: Colors.blue.shade700),
+                      tooltip: 'Create New Category',
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CategoryManagementScreen()),
+                        ).then((_) =>
+                            _loadCategoriesAndUnits()); // Reload after returning
+                      },
+                      icon: Icon(Icons.settings, color: Colors.blue.shade700),
+                      tooltip: 'Manage Categories',
+                    ),
+                  ],
                 ),
                 SizedBox(height: 16),
-
                 // Unit Dropdown
-                DropdownButtonFormField<Unit>(
-                  value: _selectedUnit,
-                  decoration: InputDecoration(
-                    labelText: 'Unit',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: _units.map((Unit unit) {
-                    return DropdownMenuItem(
-                      value: unit,
-                      child: Text(unit.unitName),
-                    );
-                  }).toList(),
-                  onChanged: (Unit? newValue) {
-                    setState(() {
-                      _selectedUnit = newValue;
-                    });
-                  },
+                // DropdownButtonFormField<Unit>(
+                //   value: _selectedUnit,
+                //   decoration: InputDecoration(
+                //     labelText: 'Unit',
+                //     border: OutlineInputBorder(),
+                //   ),
+                //   items: _units.map((Unit unit) {
+                //     return DropdownMenuItem(
+                //       value: unit,
+                //       child: Text(unit.unitName),
+                //     );
+                //   }).toList(),
+                //   onChanged: (Unit? newValue) {
+                //     setState(() {
+                //       _selectedUnit = newValue;
+                //     });
+                //   },
+                // ),
+
+                // TextButton(
+                //   onPressed: _navigateToCreateUnit,
+                //   child: Text('Create New Unit'),
+                // ),
+                Row(
+                  children: [
+                    // Unit Dropdown
+                    Expanded(
+                      child: DropdownButtonFormField<Unit>(
+                        value: _selectedUnit,
+                        decoration: InputDecoration(
+                          labelText: 'Unit',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: _units.map((Unit unit) {
+                          return DropdownMenuItem(
+                            value: unit,
+                            child: Text(unit.unitName),
+                          );
+                        }).toList(),
+                        onChanged: (Unit? newValue) {
+                          setState(() {
+                            _selectedUnit = newValue;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                        width:
+                            8), // Add some spacing between the dropdown and the button
+                    // Add Unit Button
+                    IconButton(
+                      onPressed: _navigateToCreateUnit,
+                      icon: Icon(Icons.add, color: Colors.blue.shade700),
+                      tooltip: 'Create New Unit',
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => UnitManagementScreen()),
+                        ).then((_) =>
+                            _loadCategoriesAndUnits()); // Reload after returning
+                      },
+                      icon: Icon(Icons.settings, color: Colors.blue.shade700),
+                      tooltip: 'Manage Units',
+                    ),
+                  ],
                 ),
                 SizedBox(height: 16),
 
@@ -268,7 +415,9 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                   onPressed: _isLoading ? null : _saveProduct,
                   child: _isLoading
                       ? CircularProgressIndicator()
-                      : Text(widget.product == null ? 'Add Product' : 'Update Product'),
+                      : Text(widget.product == null
+                          ? 'Add Product'
+                          : 'Update Product'),
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 48),
                     backgroundColor: Colors.blue.shade700,

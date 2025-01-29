@@ -67,7 +67,7 @@ class ProductDetailsScreen extends StatelessWidget {
                 context,
                 title: 'ລາຄາ',
                 details: [
-                  _buildDetailItem('Price', '\$' + product.price.toString(), color: Colors.green.shade700),
+                  _buildDetailItem('Price', '\LAK' + product.price.toString(), color: Colors.green.shade700),
                 ],
               ),
             ],
