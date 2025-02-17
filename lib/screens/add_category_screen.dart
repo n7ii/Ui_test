@@ -52,19 +52,26 @@ class _CreateCategoryScreenState extends State<CreateCategoryScreen> {
     if (_formKey.currentState!.validate()) {
       final categoryName = _nameController.text;
 
-      // Save the new category via API
       try {
         final newCategory = await ApiService().createCategory(categoryName);
-
-        // Return the new category to the previous screen
         Navigator.pop(context, newCategory);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error creating category: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+              action: SnackBarAction(
+                label: 'Dismiss',
+                textColor: Colors.white,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ),
+          );
+        }
       }
     }
   }

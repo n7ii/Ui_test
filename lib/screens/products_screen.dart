@@ -261,7 +261,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               ),
               SizedBox(height: 4),
               Text(
-                'Price: \$' + product.price.toString(),
+                'Price: ' + product.price.toString() + ' ກີບ',
                 style: TextStyle(
                   color: Colors.green.shade700,
                   fontSize: 14,

@@ -48,23 +48,32 @@ class _CreateUnitScreenState extends State<CreateUnitScreen> {
     );
   }
 
+  // Update the _saveUnit method
+
   void _saveUnit() async {
     if (_formKey.currentState!.validate()) {
       final unitName = _nameController.text;
 
-      // Save the new unit via API
       try {
         final newUnit = await ApiService().createUnit(unitName);
-
-        // Return the new unit to the previous screen
         Navigator.pop(context, newUnit);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error creating unit: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+              action: SnackBarAction(
+                label: 'Dismiss',
+                textColor: Colors.white,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ),
+          );
+        }
       }
     }
   }

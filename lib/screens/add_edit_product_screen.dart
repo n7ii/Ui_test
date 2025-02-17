@@ -84,6 +84,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
     }
   }
 
+  // Update the _saveProduct method
+
   Future<void> _saveProduct() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedCategory == null || _selectedUnit == null) {
@@ -118,25 +120,96 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
           await _apiService.updateProduct(updatedProduct);
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Product saved successfully')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Product saved successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
 
         Navigator.pop(context, true);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving product: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+              action: SnackBarAction(
+                label: 'Dismiss',
+                textColor: Colors.white,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ),
+          );
+        }
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
+
+  // Future<void> _saveProduct() async {
+  //   if (_formKey.currentState!.validate()) {
+  //     if (_selectedCategory == null || _selectedUnit == null) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Please select category and unit'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //       return;
+  //     }
+
+  //     setState(() {
+  //       _isLoading = true;
+  //     });
+
+  //     try {
+  //       final updatedProduct = Product(
+  //         id: widget.product?.id ?? '',
+  //         productName: _nameController.text,
+  //         quantity: int.parse(_quantityController.text),
+  //         price: int.parse(_priceController.text),
+  //         salePrice: int.parse(_salePriceController.text),
+  //         category: _selectedCategory!,
+  //         unit: _selectedUnit!,
+  //         productId: widget.product?.productId ?? 0,
+  //       );
+
+  //       if (widget.product == null) {
+  //         await _apiService.addProduct(updatedProduct);
+  //       } else {
+  //         await _apiService.updateProduct(updatedProduct);
+  //       }
+
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Product saved successfully')),
+  //       );
+
+  //       Navigator.pop(context, true);
+  //     } catch (e) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Error saving product: $e'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     } finally {
+  //       setState(() {
+  //         _isLoading = false;
+  //       });
+  //     }
+  //   }
+  // }
 
   Future<void> _navigateToCreateCategory() async {
     final newCategory = await Navigator.push(

@@ -62,7 +62,6 @@ class ApiService {
     }
   }
 
-  // Add a new product
   Future<void> addProduct(Product product) async {
     try {
       final response = await http.post(
@@ -72,14 +71,18 @@ class ApiService {
       );
 
       if (response.statusCode != 201) {
-        throw Exception('Failed to add product');
+        // Parse error message from response
+        final Map<String, dynamic> errorData = json.decode(response.body);
+        throw errorData['message'] ?? 'Failed to add product';
       }
     } catch (e) {
-      throw Exception('Failed to add product: $e');
+      if (e is FormatException) {
+        throw 'Invalid response format from server';
+      }
+      throw e.toString();
     }
   }
 
-  // Update an existing product
   Future<void> updateProduct(Product product) async {
     try {
       final response = await http.put(
@@ -89,10 +92,14 @@ class ApiService {
       );
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to update product');
+        final Map<String, dynamic> errorData = json.decode(response.body);
+        throw errorData['message'] ?? 'Failed to update product';
       }
     } catch (e) {
-      throw Exception('Failed to update product: $e');
+      if (e is FormatException) {
+        throw 'Invalid response format from server';
+      }
+      throw e.toString();
     }
   }
 
@@ -111,7 +118,6 @@ class ApiService {
     }
   }
 
-  // Create a new category
   Future<Category> createCategory(String categoryName) async {
     try {
       final response = await http.post(
@@ -120,19 +126,24 @@ class ApiService {
         body: json.encode({'category_name': categoryName}),
       );
 
+      final Map<String, dynamic> data = json.decode(response.body);
+
       if (response.statusCode == 201) {
-        final Map<String, dynamic> data = json.decode(response.body);
         if (data['success'] == true && data['data'] != null) {
           return Category.fromJson(data['data']);
         }
       }
-      throw Exception('Failed to create category');
+
+      // Handle error response
+      throw data['message'] ?? 'Failed to create category';
     } catch (e) {
-      throw Exception('Failed to create category: $e');
+      if (e is FormatException) {
+        throw 'Invalid response format from server';
+      }
+      throw e.toString();
     }
   }
 
-  // Create a new unit
   Future<Unit> createUnit(String unitName) async {
     try {
       final response = await http.post(
@@ -141,15 +152,21 @@ class ApiService {
         body: json.encode({'unit_name': unitName}),
       );
 
+      final Map<String, dynamic> data = json.decode(response.body);
+
       if (response.statusCode == 201) {
-        final Map<String, dynamic> data = json.decode(response.body);
         if (data['success'] == true && data['data'] != null) {
           return Unit.fromJson(data['data']);
         }
       }
-      throw Exception('Failed to create unit');
+
+      // Handle error response
+      throw data['message'] ?? 'Failed to create unit';
     } catch (e) {
-      throw Exception('Failed to create unit: $e');
+      if (e is FormatException) {
+        throw 'Invalid response format from server';
+      }
+      throw e.toString();
     }
   }
 
